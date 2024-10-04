@@ -1,0 +1,29 @@
+<?php
+session_start();
+if (!isset($_SESSION['user_id'])) {
+    header('Location: login.html');
+    exit();
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload File</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="upload-container">
+        <h2>Upload File</h2>
+        <form action="../php/upload.php" method="POST" enctype="multipart/form-data">
+            <input type="file" name="file" required><br>
+            <select name="department">
+                <option value="science">Science</option>
+                <option value="arts">Arts</option>
+                <!-- Add more departments as required -->
+            </select><br>
+            <button type="submit">Upload</button>
+        </form>
+    </div>
+</body>
+</html>
