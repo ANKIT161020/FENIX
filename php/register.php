@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         sendVerificationEmail($email, $name, $subject, $bodyHTML, $bodyPlain);
         
         // Redirect to login page or show a success message
-        header('Location: ../templates/login.html');
+        header('Location: ../templates/login.php');
         exit();
     } else {
         echo "Error: " . $query . "<br>" . mysqli_error($conn);

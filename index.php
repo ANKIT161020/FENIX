@@ -9,7 +9,7 @@ error_reporting(E_ALL);
 
 // Check if the user is logged in
 if (!isset($_SESSION['user_id'])) {
-    header('Location: templates/login.html');
+    header('Location: templates/login.php');
     exit();
 }
 
@@ -27,10 +27,8 @@ if (!$user) {
 
 $user_department = $user['department'];
 
-// Default avatar if not present
-if (!$user['avatar']) {
-    $user['avatar'] = 'default-avatar.png';
-}
+// Get initials from user's name
+$user_initials = strtoupper($user['name'][0]);
 
 // Fetch all unique departments
 $dept_query = "SELECT DISTINCT department FROM documents";
@@ -46,17 +44,136 @@ while ($dept = mysqli_fetch_assoc($dept_result)) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Centralized Data Management</title>
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    >
+    <link rel="stylesheet" href="./css/styles.css">
+    
+    <style>
+        /* Container for user info */
+        .user-info {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: #f0f4f8;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        /* Avatar styles */
+        .avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin-bottom: 15px;
+            border: 4px solid #ffffff;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .avatar:hover {
+            transform: scale(1.1);
+        }
+
+        /* Custom avatar with initials */
+        .avatar-placeholder {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #3e4a61;
+            color: #fff;
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            border: 4px solid #ffffff;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Styles for user details */
+        .username {
+            font-size: 22px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 10px 0;
+        }
+
+        .email, .department {
+            font-size: 16px;
+            color: #7f8c8d;
+            margin: 3px 0;
+        }
+
+        .department {
+            font-style: italic;
+            color: #34495e;
+        }
+
+        /* Additional shadow effect */
+        .user-info:hover {
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Sidebar navigation */
+        .nav-menu .nav-link {
+            padding: 10px 15px;
+            margin: 8px 0;
+            display: block;
+            color: #2c3e50;
+            text-decoration: none;
+            font-size: 16px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-menu .nav-link.active {
+            background-color: #2980b9;
+            color: #ffffff;
+        }
+
+        .nav-menu .nav-link:hover {
+            background-color: #3498db;
+            color: #ffffff;
+        }
+
+        /* Main content styles */
+        .main-content {
+            padding: 20px;
+        }
+
+        .new-buttons a {
+            display: inline-block;
+            padding: 10px 15px;
+            background-color: #2980b9;
+            color: #ffffff;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .new-buttons a:hover {
+            background-color: #3498db;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <!-- Sidebar -->
         <div class="sidebar">
             <div class="user-info">
-                <img src="<?php echo 'uploads/' . htmlspecialchars($user['avatar']); ?>" alt="User Avatar" class="avatar">
+                <?php if ($user['avatar'] && $user['avatar'] != 'default-avatar.png'): ?>
+                    <!-- Display the avatar if available -->
+                    <img src="<?php echo 'uploads/' . htmlspecialchars($user['avatar']); ?>" alt="User Avatar" class="avatar">
+                <?php else: ?>
+                    <!-- Display a circle with the initials if no avatar -->
+                    <div class="avatar-placeholder"><?php echo htmlspecialchars($user_initials); ?></div>
+                <?php endif; ?>
+                
+                <!-- Display user's name and other details -->
                 <p class="username"><?php echo htmlspecialchars($user['name']); ?></p>
                 <p class="email"><?php echo htmlspecialchars($user['email']); ?></p>
+                <p class="department">Department: <?php echo htmlspecialchars($user['department']); ?></p>
             </div>
             <nav class="nav-menu">
                 <!-- User's department on top, with active state set initially -->
@@ -81,7 +198,7 @@ while ($dept = mysqli_fetch_assoc($dept_result)) {
                 <h1><?php echo htmlspecialchars($user_department); ?> Files</h1>
                 <div class="new-buttons">
                     <!-- Redirect to Upload Page -->
-                    <a href="./templates/upload.html" class="new-btn"><i class="fas fa-file-upload"></i> Upload Document</a>
+                    <a href="./templates/upload.php" class="new-btn"><i class="fas fa-file-upload"></i> Upload Document</a>
                 </div>
             </header>
             
