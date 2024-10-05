@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['document'])) {
     $upload_dir = "../uploads/";
 
     // Access control from form input
-    $read_access = 'department'; // Read access is always "department"
+    $read_access = isset($_POST['read_access']) ? $_POST['read_access'] : 'department';
 
     // Ensure edit_access and download_access are handled properly
     $edit_access = isset($_POST['edit_access']) && !empty($_POST['edit_access']) 

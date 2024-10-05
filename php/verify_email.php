@@ -1,5 +1,6 @@
 <?php
 include 'database.php';
+include '../templates/verification_success_template.php';
 
 // Get the token from the URL
 if (isset($_GET['token'])) {
@@ -13,7 +14,8 @@ if (isset($_GET['token'])) {
         // User found, update the is_verified status
         $update_query = "UPDATE users SET is_verified=TRUE, verification_token=NULL WHERE verification_token='$token'";
         if (mysqli_query($conn, $update_query)) {
-            echo "Your email has been verified successfully.";
+           // Display the success template
+            echo getVerificationSuccessHTML();
         } else {
             echo "Failed to verify email.";
         }

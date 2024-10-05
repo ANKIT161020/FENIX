@@ -31,7 +31,6 @@ function sendVerificationEmail($recipientEmail, $recipientName, $subject, $bodyH
 
         // Send the email
         $mail->send();
-        echo 'Verification email has been sent.';
     } catch (Exception $e) {
         echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
     }

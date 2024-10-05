@@ -6,6 +6,8 @@ error_reporting(E_ALL);
 
 include 'database.php';
 include 'send_email.php'; // Include your mail configuration file
+include '../templates/email_template.php';
+include '../templates/register_success_template.php';
 
 session_start();
 
@@ -39,14 +41,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         // Set up email content
         $subject = "Verify Your Email Address";
-        $bodyHTML = "<p>Hi $name,</p><p>Please click the link below to verify your email address:</p><p><a href='$verify_link'>$verify_link</a></p>";
+        $bodyHTML = getVerificationEmailHTML($name, $verify_link);
         $bodyPlain = "Hi $name, Please click the link below to verify your email address: $verify_link";
 
         // Send verification email
         sendVerificationEmail($email, $name, $subject, $bodyHTML, $bodyPlain);
         
-        // Redirect to login page or show a success message
-        header('Location: ../templates/login.php');
+        // Assuming registration is successful:
+        echo getRegisterSuccessHTML();
         exit();
     } else {
         echo "Error: " . $query . "<br>" . mysqli_error($conn);
