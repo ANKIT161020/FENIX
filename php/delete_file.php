@@ -2,45 +2,44 @@
 include 'database.php';
 session_start();
 
-if (isset($_GET['id'])) {
-    $file_id = $_GET['id'];
-    $user_id = $_SESSION['user_id'];
+// Check if the user is logged in
+if (!isset($_SESSION['user_id'])) {
+    echo "Unauthorized access.";
+    exit();
+}
 
-    // Fetch the file details
-    $query = "SELECT * FROM documents WHERE id='$file_id' AND user_id='$user_id'";
-    $result = mysqli_query($conn, $query);
+$user_id = $_SESSION['user_id'];
+$file_id = isset($_GET['id']) ? intval($_GET['id']) : null;
 
-    if ($result && mysqli_num_rows($result) > 0) {
-        $file = mysqli_fetch_assoc($result);
-        
-        // Get the file path
-        $file_path = realpath('../' . $file['file_path']); // Get absolute path
-        
-        // Debugging: Check file path
-        echo "File path to delete: " . $file_path . "<br>";
+if ($file_id) {
+    // Fetch file details securely from the documents table
+    $stmt = $conn->prepare("SELECT * FROM documents WHERE id = ?");
+    $stmt->bind_param("i", $file_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $file = $result->fetch_assoc();
+    $stmt->close();
 
-        // Delete the file from the server
-        if ($file_path && file_exists($file_path)) {
-            if (unlink($file_path)) {
-                echo "File deleted successfully.<br>";
-            } else {
-                echo "Failed to delete the file.<br>";
-            }
-        } else {
-            echo "File does not exist or path is incorrect.<br>";
+    if ($file && $file['uploaded_by'] == $user_id) {
+        // Proceed to delete the file
+        $file_path = '../uploads/' . $file['file_path'];
+        if (file_exists($file_path)) {
+            unlink($file_path); // Delete the file from the server
         }
 
         // Delete the file record from the database
-        $delete_query = "DELETE FROM documents WHERE id='$file_id'";
-        if (mysqli_query($conn, $delete_query)) {
-            echo "File record deleted from the database.";
-            header('Location: ../index.php'); // Redirect to the dashboard
-            exit();
+        $delete_stmt = $conn->prepare("DELETE FROM documents WHERE id = ?");
+        $delete_stmt->bind_param("i", $file_id);
+        if ($delete_stmt->execute()) {
+            echo "File deleted successfully.";
         } else {
-            echo "Error deleting file record from the database.";
+            echo "Error deleting file: " . $conn->error;
         }
+        $delete_stmt->close();
     } else {
-        echo "File not found in the database.";
+        echo "Error: You do not have permission to delete this file.";
     }
+} else {
+    echo "Error: No file ID provided.";
 }
 ?>
