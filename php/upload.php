@@ -30,16 +30,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['document'])) {
     $upload_dir = "../uploads/";
 
     // Access control from form input
-    $read_access = isset($_POST['read_access']) ? $_POST['read_access'] : 'department';
+    $read_access = $_POST['read_access'] ?? 'department';
 
-    // Ensure edit_access and download_access are handled properly
-    $edit_access = isset($_POST['edit_access']) && !empty($_POST['edit_access']) 
-                   ? htmlspecialchars($_POST['edit_access'], ENT_QUOTES, 'UTF-8') 
-                   : ''; // Comma-separated list of email addresses or empty string
-
-    $download_access = isset($_POST['download_access']) && !empty($_POST['download_access']) 
-                       ? htmlspecialchars($_POST['download_access'], ENT_QUOTES, 'UTF-8') 
-                       : ''; // Comma-separated list of email addresses or empty string
+    // Handle edit and download access
+    $edit_access = htmlspecialchars($_POST['edit_access'] ?? '', ENT_QUOTES, 'UTF-8');
+    $download_access = htmlspecialchars($_POST['download_access'] ?? '', ENT_QUOTES, 'UTF-8');
 
     // Check for upload errors
     if ($_FILES["document"]["error"] !== UPLOAD_ERR_OK) {
@@ -48,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['document'])) {
 
     // Create uploads folder if it doesn't exist
     if (!is_dir($upload_dir)) {
-        mkdir($upload_dir, 0777, true); // Creates the directory with full permissions
+        mkdir($upload_dir, 0777, true);
     }
 
     // Create a unique file name to avoid overwriting
@@ -58,9 +53,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['document'])) {
     // Move the file to the uploads directory
     if (move_uploaded_file($file_tmp, $target_file)) {
         // Insert file info into the database securely
-        $stmt = $conn->prepare("INSERT INTO documents (faculty_id, department, file_name, file_path, file_type, file_size, read_access, edit_access, download_access) 
-                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssssssss", $faculty_id, $department, $file_name, $unique_file_name, $file_type, $file_size, $read_access, $edit_access, $download_access);
+        $stmt = $conn->prepare("INSERT INTO documents (uploaded_by, faculty_id, department, file_name, file_path, file_type, file_size, read_access, edit_access, download_access) 
+                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("ssssssssss", $faculty_id, $faculty_id, $department, $file_name, $unique_file_name, $file_type, $file_size, $read_access, $edit_access, $download_access);
         
         if ($stmt->execute()) {
             // Successful upload and insertion
