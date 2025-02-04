@@ -1,7 +1,6 @@
 <?php
 include 'php/database.php';
 session_start();
-
 // Enable error reporting for debugging (remove in production)
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -101,7 +100,13 @@ while ($dept = mysqli_fetch_assoc($dept_result)) {
                     <button class="filter-btn" onclick="showFilesByType('doc')">Documents</button>
                     <button class="filter-btn" onclick="showFilesByType('xls')">Spreadsheets</button>
                     <button class="filter-btn" onclick="showFilesByType('pdf')">PDFs</button>
-                    <button class="filter-btn" onclick="showFilesByType('image')">Images</button>
+                    <button class="filter-btn" onclick="showFilesByType('image')">Images</button> 
+                    <!-- Upload Certificates Button (Only for Teachers) -->
+                    <?php if (!empty($user_department)): ?>
+                      <a href="./php/upload_certificates.php" class="filter-btn upload-btn">
+                        <i class="fas fa-upload"></i> Upload Certificates
+                      </a>
+                    <?php endif; ?>
                     <input type="text" class="search-input" placeholder="Search...">
                 </div>
                 <div id="file-list" class="file-list"></div>

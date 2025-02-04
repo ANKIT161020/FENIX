@@ -1,0 +1,17 @@
+# Core dependencies
+requests==2.31.0
+jsonschema==4.18.0
+
+# OCR dependencies
+pytesseract==0.3.10
+easyocr==1.7.1
+pillow==10.0.0
+opencv-python==4.8.0.76
+numpy==1.26.0
+
+# Deep Learning & Transformers (for DeepSeek-R1 API calls)
+torch==2.0.1
+transformers==4.36.0
+
+# Extra dependencies (for error handling, structured processing)
+chardet==5.1.0
