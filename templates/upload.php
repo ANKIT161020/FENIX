@@ -64,6 +64,10 @@ if ($user) {
             <!-- Download Access (Comma-separated emails) -->
             <label for="download_access">Who Can Download? (Enter Faculty Emails separated by commas):</label><br>
             <input type="text" name="download_access" id="download_access" placeholder="e.g., user1@somaiya.edu, user2@somaiya.edu"><br><br>
+            <div class="form-group">
+                <input type="checkbox" id="watermark_on_download" name="watermark_on_download">
+                <label for="watermark_on_download">Add watermark when others download this file</label>
+            </div>
             
             <!-- Submit Button -->
             <button type="submit">Upload</button>

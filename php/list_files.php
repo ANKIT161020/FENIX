@@ -85,14 +85,14 @@ function buildFileRow($file, $user_department, $user_id) {
 }
 
 // Helper function to build view button
-function buildViewButton($file, $file_path, $file_type, $user_department, $user_id) {
-    $hasReadAccess = $file['read_access'] == 'all' || $file['department'] == $user_department || in_array($user_id, explode(',', $file['download_access']));
-    
-    if (!empty($file_path) && !empty($file_type) && $hasReadAccess) {
-        return "<button onclick=\"openModal('fenix/$file_path', '$file_type'); return false;\" class='file-options'><i class='fas fa-eye'></i></button>";
+function buildViewButton($file, $user_department, $user_id) {
+    $hasReadAccess = $file['read_access'] === 'all' || $file['department'] == $user_department || 
+    in_array($user_id, explode(',', $file['download_access']));
+    if ($hasReadAccess) {
+        // Use file id for secure access
+        return "<button onclick=\"openModal('./php/serve_file.php?id={$file['id']}', '{$file['file_type']}'); return false;\" class='file-options'><i class='fas fa-eye'></i></button>";
     }
-    
-    return "<p>Error: Unable to preview this file.</p>";
+    return "";
 }
 
 // Helper function to build download button
